@@ -1,0 +1,11 @@
+Trying to connect to the server
+Connection Established
+server message:Welcome
+Enter message to send: 
+server ack:message received
+Enter message to send: 
+server ack:message received
+Enter message to send: 
+server ack:message received
+Enter message to send: 
+server ack:message received
