@@ -49,7 +49,10 @@ namespace W1
 		void display() const
 		{
 			for (size_t i = 0; i < this->_mystate.index; i++)
+			{
+				std::cout << i << ":" << this->_intBuffer[i] << std::endl;
 				*this->_mystate._streamP << i << ":" << this->_intBuffer[i] << std::endl;
+			}
 		}
 	};
 }
