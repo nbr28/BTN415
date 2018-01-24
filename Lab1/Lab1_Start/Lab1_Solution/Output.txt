@@ -1,0 +1,7 @@
+Number of Args: 2
+Command Line: C:\Users\natan\source\repos\BTN415\Lab1\Lab1_Start\Debug\Lab1_Solution.exe 5
+0:2
+1:1
+2:8
+3:3
+4:5

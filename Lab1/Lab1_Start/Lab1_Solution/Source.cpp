@@ -35,16 +35,16 @@ int main(int argc, char *argv[])
 		Max = atoi(argv[1]);
 	}
 	
-	//Object obj(Max, &ofs);
+	Object obj(Max, &ofs);
 
 	srand(time(NULL));
 	for (int x = 0; x < Max; x++)
 	{
 		int RandResult = rand() % 10 + 1;
-		//obj += RandResult;
+		obj += RandResult;
 	}
 
-	//obj.display();
+	obj.display();
 	
 	return 1;
 }
