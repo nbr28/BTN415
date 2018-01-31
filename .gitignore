@@ -8,3 +8,13 @@
 /Lab1/Lab1_Start/Lab1_Solution/Debug/Lab1_Solution.tlog
 /Lab1/Lab1_Start/Lab1_Solution/Debug
 *.zip
+*.ipch
+*.suo
+*.db
+*.opendb
+*.tlog
+*.pdb
+*.log
+*.obj
+*.idb
+*.ilk
