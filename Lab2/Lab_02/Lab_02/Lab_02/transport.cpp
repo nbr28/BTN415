@@ -55,17 +55,31 @@ udp_packet channel::transmit(udp_packet packet) {
 	}
 }
 
-//void tcp_node::send_signal(tcp_node *dest, tcp_node *transmitter, channel *wireless, string data) {
-//    tcp_packet packet;
-//    packet.source_port = transmitter->port;
-//    packet.dest_port = dest->port;
-//    packet.acknowledge = true;
-//    packet.checksum = true;
-//    packet.data = data;
-//
-//    dest->rec.checksum = false;
-//    dest->rec.acknowledge = false;
-//    while (not dest->rec.checksum or not dest->rec.acknowledge) {
-//        dest->rec = wireless->transmit(packet);
-//    }
-//}
+void tcp_node::request_transmission(tcp_node * transmitter, channel * wireless)
+{
+	send_signal(, transmitter, wireless);
+}
+
+void tcp_node::send_signal(tcp_node *dest, tcp_node *transmitter, channel *wireless, string data) {
+    tcp_packet packet;
+    packet.source_port = transmitter->port;
+    packet.dest_port = dest->port;
+    packet.acknowledge = true;
+    packet.checksum = true;
+    packet.data = data;
+
+    dest->rec.checksum = false;
+    dest->rec.acknowledge = false;
+    while (! dest->rec.checksum || ! dest->rec.acknowledge) {
+        dest->rec = wireless->transmit(packet);
+    }
+}
+
+tcp_packet tcp_node::send_packet(int client_port)
+{
+	tcp_packet packet;
+	packet.source_port = this->port;
+	packet.dest_port = client_port;
+	packet.data = this->data.substr(this->current_index, 1);
+	return packet;
+}
