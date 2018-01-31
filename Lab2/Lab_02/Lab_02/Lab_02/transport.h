@@ -63,7 +63,15 @@ public:
 	tcp_packet send_packet(int);
 	int get_data_size() { return this->data_size; }
 	int get_current_index() { return this->current_index; }
-	void update_current_index() { this->current_index++; }
+	void update_current_index() 
+	{
+		if (this->data_size - this->current_index > 64)
+			this->current_index += 64;
+		else
+		{
+			this->current_index += this->data_size - this->current_index;
+		}
+	}
 	void request_transmission(tcp_node *transmitter, channel * wireless);
 	void send_signal(tcp_node *dest, tcp_node *transmitter, channel *wireless, string data);
 	void print_data(ofstream&os) { os << this->data << endl; }

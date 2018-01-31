@@ -8,8 +8,14 @@ int main() {
 	ofstream ofs("Output.txt");
 	if (ofs.fail())
 		std::cout << "Failed to create output file - Screenshots will be required" << std::endl;
-
-	string message = "A cool message to be transmitted.";
+	ifstream istrm;
+	istrm.open("DemoText.txt");
+	if (!istrm)
+	{
+		return 1;
+	}
+	string message;
+	std::getline(istrm, message,'#');
 	channel wireless(20, 20);
 
 	udp_client client1(80);

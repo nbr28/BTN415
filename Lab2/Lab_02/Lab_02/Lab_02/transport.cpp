@@ -141,7 +141,12 @@ tcp_packet tcp_node::send_packet(int client_port)
 	tcp_packet packet;
 	packet.source_port = this->port;
 	packet.dest_port = client_port;
-	packet.data = this->data.substr(this->current_index, 1);
+	if(this->data_size-this->current_index>64)
+		packet.data = this->data.substr(this->current_index, 64);
+	else
+	{
+		packet.data = this->data.substr(this->current_index, this->data_size - this->current_index);
+	}
 	return packet;
 }
 
@@ -149,7 +154,7 @@ tcp_client::tcp_client(int port) {
 	this->port = port;
 }
 
-tcp_server::tcp_server(int port, string data) {
+tcp_server::tcp_server(int port=0, string data="") {
 	this->port = port;
 	this->data = data;
 	this->current_index = 0;
