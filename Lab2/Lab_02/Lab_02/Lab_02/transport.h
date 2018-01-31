@@ -66,7 +66,7 @@ public:
 	void update_current_index() { this->current_index++; }
 	void request_transmission(tcp_node *transmitter, channel * wireless);
 	void send_signal(tcp_node *dest, tcp_node *transmitter, channel *wireless, string data);
-	void print_data(ofstream&) { cout << this->data << endl; }
+	void print_data(ofstream&os) { os << this->data << endl; }
 	bool three_way_handshake(tcp_node *, channel *);
 	bool four_way_handshake(tcp_node *, channel *);
 };
