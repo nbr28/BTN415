@@ -42,6 +42,7 @@ void main()
 	while (1) {
 		//sends Txbuffer		
 		char TxBuffer[128] = {};
+		cout<< "Enter a String to transmit" << std::endl;
 		ofs << "Enter a String to transmit" << std::endl;
 		cin >> TxBuffer;
 		send(ClientSocket, TxBuffer, sizeof(TxBuffer), 0);

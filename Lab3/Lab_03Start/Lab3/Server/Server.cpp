@@ -10,12 +10,14 @@ void main()
 	std::ofstream ofs("Output.txt");
 	if (!ofs)
 		std::cout << "ERROR: Failed to open output file" << std::endl;
-	
+
 	//starts Winsock DLLs		
 	WSADATA wsaData;
 	if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
+	{
 		ofs << "ERROR:  Failed to start WSA" << std::endl;
 		return;
+	}
 
 	//create server socket
 	SOCKET ServerSocket;
@@ -66,6 +68,8 @@ void main()
 		char RxBuffer[128] = {};
 		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 		ofs << "Msg Rx: " << RxBuffer << std::endl;
+		cout << "Msg Rx: " << RxBuffer << std::endl;
+
 	}
 	closesocket(ConnectionSocket);	//closes incoming socket
 	closesocket(ServerSocket);	    //closes server socket	
