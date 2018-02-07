@@ -49,38 +49,29 @@ void main()
 		return;
 	}
 
-	while (1)
-	{
-		cout << "Waiting for client connection\n" << endl;
 
-		//accepts a connection from a client
-		SOCKET ConnectionSocket;
-		ConnectionSocket = SOCKET_ERROR;
-		if ((ConnectionSocket = accept(ServerSocket, NULL, NULL)) == SOCKET_ERROR) {
-			closesocket(ServerSocket);
-			WSACleanup();
-			return;
-		}
+	cout << "Waiting for client connection\n" << endl;
 
-		ofs << "Connection Established" << std::endl;
-
-		while (1) {
-			//receives RxBuffer
-			char RxBuffer[128] = {};
-			char TxBuffer[128] = "Received Massage";
-			recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-
-			ofs << "Msg Rx: " << RxBuffer << std::endl;
-			cout << "Msg Rx: " << RxBuffer << std::endl;
-			send(ConnectionSocket, TxBuffer, sizeof(TxBuffer), 0);
-
-			if (strcmp(RxBuffer, "quit") == 0)
-				break;
-		}
-		closesocket(ConnectionSocket);	//closes incoming socket
+	//accepts a connection from a client
+	SOCKET ConnectionSocket;
+	ConnectionSocket = SOCKET_ERROR;
+	if ((ConnectionSocket = accept(ServerSocket, NULL, NULL)) == SOCKET_ERROR) {
+		closesocket(ServerSocket);
+		WSACleanup();
+		return;
 	}
 
+	ofs << "Connection Established" << std::endl;
 
+	while (1) {
+		//receives RxBuffer
+		char RxBuffer[128] = {};
+		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+		ofs << "Msg Rx: " << RxBuffer << std::endl;
+		cout << "Msg Rx: " << RxBuffer << std::endl;
+
+	}
+	closesocket(ConnectionSocket);	//closes incoming socket
 	closesocket(ServerSocket);	    //closes server socket	
 	WSACleanup();					//frees Winsock resources
 }
