@@ -5,9 +5,9 @@
 #include <fstream>
 using namespace std;
 
-void main()
+void main(int argc, char*argv[])
 {
-	std::ofstream ofs("Output.txt");
+	std::ofstream ofs(argv[1]);
 	//starts Winsock DLLs
 	WSADATA wsaData;
 	if ((WSAStartup(MAKEWORD(2, 2), &wsaData)) != 0) {
@@ -43,16 +43,27 @@ void main()
 		//sends Txbuffer		
 		char TxBuffer[128] = {};
 		char RxBuffer[128] = {};
-		cout << "Enter a String to transmit" << std::endl;
-		ofs << "Enter a String to transmit" << std::endl;
+		cout << "Enter a File to transmit" << std::endl;
+		ofs << "Enter a File to transmit" << std::endl;
 		cin >> TxBuffer;
+		ofs << "Tx: " << TxBuffer << std::endl;
+		ifstream istrm(TxBuffer);
+		if (!istrm)
+		{
+			ofs << "FILE FAILED TO OPEN: " << TxBuffer << std::endl;
+			cout << "FILE FAILED TO OPEN: " << TxBuffer << std::endl;
+		}
+		char chr = ' ';
+		char* chrP=&chr;
+		while (chr != '\0')
+		{
+			istrm.get(chr);
 
-		send(ClientSocket, TxBuffer, sizeof(TxBuffer), 0);
-		recv(ClientSocket, RxBuffer, sizeof(RxBuffer), 0);
-		ofs << "Msg Rx: " << RxBuffer << std::endl;
-		cout << "Msg Rx: " << RxBuffer << std::endl;
-
-
+			send(ClientSocket, chrP, sizeof(char), 0);
+			recv(ClientSocket, RxBuffer, sizeof(RxBuffer), 0);
+			ofs << "Msg Rx: " << RxBuffer << std::endl;
+			cout << "Msg Rx: " << RxBuffer << std::endl;
+		}
 		if (strcmp(TxBuffer, "quit") == 0)
 			break;
 	}

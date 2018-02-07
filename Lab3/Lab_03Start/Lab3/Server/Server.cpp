@@ -7,7 +7,7 @@ using namespace std;
 
 void main()
 {
-	std::ofstream ofs("Output.txt");
+	std::ofstream ofs("Server_Output.txt");
 	if (!ofs)
 		std::cout << "ERROR: Failed to open output file" << std::endl;
 
