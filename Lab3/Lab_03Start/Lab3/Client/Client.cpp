@@ -42,10 +42,19 @@ void main()
 	while (1) {
 		//sends Txbuffer		
 		char TxBuffer[128] = {};
-		cout<< "Enter a String to transmit" << std::endl;
+		char RxBuffer[128] = {};
+		cout << "Enter a String to transmit" << std::endl;
 		ofs << "Enter a String to transmit" << std::endl;
 		cin >> TxBuffer;
+
 		send(ClientSocket, TxBuffer, sizeof(TxBuffer), 0);
+		recv(ClientSocket, RxBuffer, sizeof(RxBuffer), 0);
+		ofs << "Msg Rx: " << RxBuffer << std::endl;
+		cout << "Msg Rx: " << RxBuffer << std::endl;
+
+
+		if (strcmp(TxBuffer, "quit") == 0)
+			break;
 	}
 
 	//closes connection and socket
