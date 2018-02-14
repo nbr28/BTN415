@@ -20,3 +20,9 @@
 *.ilk
 *.txt
 *.user
+/Lab3/Lab_03Start/Lab3/x64/Debug/Client2
+/Lab3/Lab_03Start/Lab3/x64/Debug/Client3
+/Lab3/Lab_03Start/Lab3/x64/Debug/Client1
+*.db-shm
+*.db-wal
+*.exe
