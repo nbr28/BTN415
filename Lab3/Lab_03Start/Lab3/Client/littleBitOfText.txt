@@ -1,0 +1,1 @@
+Returns the character currently pointed by the internal file position indicator of the specified stream. The internal file position indicator is then advanced to the next character.

@@ -1,0 +1,3 @@
+Enter a File to transmit
+Tx: quit
+Msg Rx: Received Massage

@@ -18,3 +18,7 @@
 *.obj
 *.idb
 *.ilk
+*.user
+*.db-shm
+*.db-wal
+*.exe
