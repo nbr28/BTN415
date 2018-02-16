@@ -51,6 +51,8 @@ public:
 	char * receive_message(int); //receives message from the connection_socket
 	void send_message(char *, int); //sends message to the connection_socket
 	void echo_mode(int); //prints a received message and sends it back
+	void rec_mode(int socket_number);//receive data from client
+	void send_mode();//send broadcast data out to the clients
 	winsock_server(int, std::string, std::ofstream *);
 	~winsock_server();
 };
@@ -73,6 +75,8 @@ public:
 	void connect_to_tcp_server_loop(); //keeps trying to connect until successful
 	winsock_client(int, std::string, std::ofstream *);
 	~winsock_client();
+
+	void get_message();
 };
 
 #endif WINSOCK_H

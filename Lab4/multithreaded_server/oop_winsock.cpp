@@ -1,5 +1,10 @@
 #include "oop_winsock.h"
 
+char message_buffer[128] = {};
+int message_sender = 0;
+bool buffer_full = false;//has a message been put in the buffer
+
+
 //starts all necessary Windwos dlls
 void winsock::start_DLLS() {
 	if ((WSAStartup(MAKEWORD(this->version_num1, this->version_num2), &this->wsa_data)) != 0) {
@@ -90,6 +95,62 @@ void winsock_server::echo_mode(int socket_number) {
 	}	
 }
 
+void winsock_server::rec_mode(int socket_numer)
+{
+	Print("Thread started for socket");
+	while (true)
+	{
+		strcpy(message_buffer, this->receive_message(socket_numer));
+		message_sender = socket_numer;
+		buffer_full = true;
+		//std::string s = ;
+		Print("From user: " + std::to_string(message_sender) + " " + message_buffer);
+
+		if (strcmp(message_buffer, "quit")==0)
+		{
+			Print("Closing connection with " + socket_numer);
+			closesocket(this->connection_socket[socket_numer]);
+			this->active_sockets[socket_numer]=0;//set the active socket to off (false)
+			break;
+		}
+	}
+}
+
+void winsock_server::send_mode()
+{
+	std::string full_message = "";
+	//Print("th");
+	while (true)
+	{
+		if (buffer_full)
+		{
+			full_message = "User " + std::to_string(message_sender) + " " + message_buffer;
+
+
+			for (int socket_number = 0; socket_number < MAX_SOCKETS; socket_number++)
+			{
+				if (this->active_sockets[socket_number] == 1)
+					this->send_message((char*)full_message.c_str(), socket_number);
+			}
+	
+			if (strcmp(message_buffer, "quit")==0)
+			{
+				Print("Closing Connection with " + message_sender);
+				closesocket(this->connection_socket[message_sender]);
+				this->active_sockets[message_sender] = 0;
+				std::memset(message_buffer, '0', 128);//clean up buffer for others
+				buffer_full = false;
+				break;
+			}
+
+			buffer_full = false;
+			std::memset(message_buffer,'0',128);
+		}
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
+	}
+}
+
 //accepts incoming connections
 int winsock_server::accept_connection(){
 	SOCKET aux_connection_socket;
@@ -124,7 +185,7 @@ char * winsock_server::receive_message(int index) {
 
 //sends messages to the connection_socket
 void winsock_server::send_message(char * tx_buffer, int index) {
-	send(this->connection_socket[index], tx_buffer, strlen(tx_buffer), 0);
+	send(this->connection_socket[index], tx_buffer, strlen(tx_buffer)+1, 0);
 }
 
 //server constructor that sets up the port number and ip number
@@ -159,7 +220,7 @@ char * winsock_client::receive_message() {
 
 //sends messages to the client_socket
 void winsock_client::send_message(char * tx_buffer) {
-	send(this->client_socket, tx_buffer, strlen(tx_buffer), 0);
+	send(this->client_socket, tx_buffer, strlen(tx_buffer)+1, 0);
 }
 
 //connects to a tcp_server, exits in case the server is unavailable
@@ -210,4 +271,12 @@ winsock_client::winsock_client(int port, std::string ip, std::ofstream *theStrea
 //client socket destructor that closes the client_socket
 winsock_client::~winsock_client(){
 	closesocket(this->client_socket); //closes client socket
+}
+
+void winsock_client::get_message()
+{
+	while (true)
+	{
+		Print(this->receive_message());
+	}
 }

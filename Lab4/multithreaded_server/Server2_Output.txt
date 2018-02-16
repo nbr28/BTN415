@@ -1,0 +1,3 @@
+Waiting for client connection
+Connection Accepted
+Closing Connection with 
