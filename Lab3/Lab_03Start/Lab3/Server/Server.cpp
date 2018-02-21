@@ -5,6 +5,26 @@
 
 using namespace std;
 
+void threadLogic(SOCKET ConnectionSocket,ofstream& ofs)
+{
+
+	send(ConnectionSocket, "Ready to Receive", sizeof("Ready to Receive"), 0);
+	while (1) {
+		//receives RxBuffer
+		char RxBuffer[128] = { '\0' };
+		char TxBuffer[128] = "Ok";
+		recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+		cout << RxBuffer << endl;
+
+		if (string(RxBuffer) == "done")
+			break;
+
+		send(ConnectionSocket, TxBuffer, sizeof(TxBuffer), 0);
+	}
+	cout << "closing connection" << endl;
+	closesocket(ConnectionSocket);	//closes incoming socket
+}
+
 void main()
 {
 	std::ofstream ofs("Server_Output.txt");
@@ -44,17 +64,18 @@ void main()
 		return;
 	}
 
-	//listen on a socket
-	if (listen(ServerSocket, 1) == SOCKET_ERROR) {
-		closesocket(ServerSocket);
-		WSACleanup();
-		ofs << "ERROR:  listen failed to configure ServerSocket" << std::endl;
-		return;
-	}
-
+	
 
 	while (1)
 	{
+
+		//listen on a socket
+		if (listen(ServerSocket, 3) == SOCKET_ERROR) {
+			closesocket(ServerSocket);
+			WSACleanup();
+			ofs << "ERROR:  listen failed to configure ServerSocket" << std::endl;
+			return;
+		}
 
 
 		cout << "Waiting for client connection\n" << endl;
@@ -71,7 +92,7 @@ void main()
 		ofs << "Connection Established" << std::endl;
 
 		bool correctUser = false;
-		
+
 
 		for (int i = 0; i < 3 && correctUser == false; i++)
 		{
@@ -79,31 +100,32 @@ void main()
 			send(ConnectionSocket, "Login Name", sizeof("Login Name"), 0);
 			recv(ConnectionSocket, TempRxBuffer, sizeof(TempRxBuffer), 0);
 
-			if (strcmp(TempRxBuffer, "sam")==0)
+			if (strcmp(TempRxBuffer, "sam") == 0)
 			{
 				correctUser = true;
-			}			
-		}
-		
-		if (correctUser)
-		{
-			send(ConnectionSocket, "Ready to Receive", sizeof("Ready to Receive"), 0);
-			while (1) {
-				//receives RxBuffer
-				char RxBuffer[128] = { '\0' };
-				char TxBuffer[128] = "Ok";
-				recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
-				cout << RxBuffer << endl;
-				send(ConnectionSocket, TxBuffer, sizeof(TxBuffer), 0);
 			}
+		}
+
+		
+
+		if(correctUser)
+		{
+			threadLogic(ConnectionSocket, ofs);
+			//spawn new threads here
 		}
 		else
 		{
 			send(ConnectionSocket, "failed", sizeof("failed"), 0);
 			cout << "failed Connection" << endl;
 		}
+
+		cout << "closing connection" << endl;
 		closesocket(ConnectionSocket);	//closes incoming socket
+
+
+		
 	}
+
 	closesocket(ServerSocket);	    //closes server socket	
 	WSACleanup();					//frees Winsock resources
 }

@@ -56,6 +56,7 @@ void main()
 			cout << "ok message recived" << endl;
 		cin.getline(TxBuffer,sizeof(TxBuffer));
 		send(ClientSocket, TxBuffer, strlen(TxBuffer)+1, 0);
+		
 		if (string(TxBuffer) == "done")
 		{
 			//closes connection and socket
