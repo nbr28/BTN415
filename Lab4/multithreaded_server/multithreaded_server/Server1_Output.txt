@@ -1,5 +1,20 @@
 Waiting for client connection
+Waiting for client connection
+Connection Accepted
 Connection Accepted
 Thread started for socket
-From user: 0 quit
-Closing connection with 
+Connection Accepted
+Connection Accepted
+Thread started for socket
+User name is: John
+User name is: Sam
+From Sam: I am sam
+From John: I am john
+From Sam: I like john
+From Sam: to love is to live
+From Sam: quit
+Closing connection with Sam
+Closing Connection with Sam
+From John: quit
+Closing connection with John
+Closing Connection with John
