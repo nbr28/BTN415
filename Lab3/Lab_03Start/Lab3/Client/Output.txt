@@ -1,4 +1,2 @@
-Enter a String to transmit
-Enter a String to transmit
-Enter a String to transmit
-Enter a String to transmit
+Enter a file to transmit
+Enter a file to transmit
