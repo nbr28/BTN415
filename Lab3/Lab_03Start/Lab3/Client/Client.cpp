@@ -52,14 +52,19 @@ void main()
 		char RxBuffer[128] = {'\0'};
 		recv(ClientSocket, RxBuffer, sizeof(RxBuffer),0);
 		cout<< RxBuffer << std::endl;
-		ofs << "Enter a text to transmit" << std::endl;
+		if (string(RxBuffer) == "ok")
+			cout << "ok message recived" << endl;
 		cin.getline(TxBuffer,sizeof(TxBuffer));
 		send(ClientSocket, TxBuffer, strlen(TxBuffer)+1, 0);
+		if (string(TxBuffer) == "done")
+		{
+			//closes connection and socket
+			closesocket(ClientSocket);
+			break;
+		}
 		
 	}
 
-	//closes connection and socket
-	closesocket(ClientSocket);
 	//frees Winsock DLL resources
 	WSACleanup();
 }

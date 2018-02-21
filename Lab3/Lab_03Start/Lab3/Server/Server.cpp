@@ -71,39 +71,36 @@ void main()
 		ofs << "Connection Established" << std::endl;
 
 		bool correctUser = false;
-		char TempRxBuffer[128] = { '\0' };
-		send(ConnectionSocket, "Login Name", sizeof("Login Name"), 0);
+		
 
 		for (int i = 0; i < 3 && correctUser == false; i++)
 		{
+			char TempRxBuffer[128] = {};
 			send(ConnectionSocket, "Login Name", sizeof("Login Name"), 0);
 			recv(ConnectionSocket, TempRxBuffer, sizeof(TempRxBuffer), 0);
 
-			if (string(TempRxBuffer)== "sam")
+			if (strcmp(TempRxBuffer, "sam")==0)
 			{
-				correctUser == true;
-			}
-			
+				correctUser = true;
+			}			
 		}
+		
 		if (correctUser)
 		{
-
+			send(ConnectionSocket, "Ready to Receive", sizeof("Ready to Receive"), 0);
 			while (1) {
 				//receives RxBuffer
-				char RxBuffer = '\0';
-				char TxBuffer[128] = "Received Massage";
-				recv(ConnectionSocket, &RxBuffer, sizeof(RxBuffer), 0);
-				if (!ofsFile)
-					cout << "BAD FILE";
-
-				ofs << "Msg Rx: " << RxBuffer << std::endl;
-				//ofsFile.put(RxBuffer);
+				char RxBuffer[128] = { '\0' };
+				char TxBuffer[128] = "Ok";
+				recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
+				cout << RxBuffer << endl;
 				send(ConnectionSocket, TxBuffer, sizeof(TxBuffer), 0);
 			}
 		}
 		else
 		{
 			send(ConnectionSocket, "failed", sizeof("failed"), 0);
+			cout << "failed Connection" << endl;
 		}
 		closesocket(ConnectionSocket);	//closes incoming socket
 	}
