@@ -67,20 +67,18 @@ void main()
 		return;
 	}
 
-
 	//listen on a socket
-	if (listen(ServerSocket, 2) == SOCKET_ERROR) {
+	if (listen(ServerSocket, 3) == SOCKET_ERROR) {
 		closesocket(ServerSocket);
 		WSACleanup();
 		ofs << "ERROR:  listen failed to configure ServerSocket" << std::endl;
 		return;
 	}
 
+
 	while (1)
 	{
-
-
-
+		
 
 		cout << "Waiting for client connection\n" << endl;
 
