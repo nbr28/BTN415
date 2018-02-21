@@ -2,6 +2,7 @@
 
 char message_buffer[128] = {};
 int message_sender = 0;
+std::string userNames[MAX_SOCKETS + 1];
 bool buffer_full = false;//has a message been put in the buffer
 
 
@@ -30,14 +31,14 @@ SOCKET winsock::initialize_tcp_socket() {
 //note that in case multiple socket objects are created, start_DLLS()
 //is called multiple times. This, however, does not result in errors
 //just a slight redundancy
-winsock::winsock(){
+winsock::winsock() {
 	this->version_num1 = 2;
 	this->version_num2 = 2;
 	this->start_DLLS();
 }
 
 //binds the server socket
-void winsock_server::bind_socket(){
+void winsock_server::bind_socket() {
 	struct sockaddr_in SvrAddr;
 	SvrAddr.sin_family = AF_INET; //Address family type internet
 	SvrAddr.sin_port = htons(this->port); //port (host to network conversion)
@@ -52,7 +53,7 @@ void winsock_server::bind_socket(){
 }
 
 //puts the server socket in listening mode
-void winsock_server::listen_socket(){
+void winsock_server::listen_socket() {
 	if (listen(this->server_socket, 1) == SOCKET_ERROR) {
 		closesocket(this->server_socket);
 		WSACleanup();
@@ -84,7 +85,7 @@ void winsock_server::echo_mode(int socket_number) {
 		std::string s(rx_buffer, strlen(rx_buffer));
 		msgToWrite = "From connection " + socket_number + s;
 		Print(msgToWrite);
-		this->send_message("message received",socket_number);
+		this->send_message("message received", socket_number);
 		if (strcmp(rx_buffer, "quit") == 0) {
 			msgToWrite = "Closing Connection with " + socket_number;
 			Print(msgToWrite);
@@ -92,25 +93,29 @@ void winsock_server::echo_mode(int socket_number) {
 			this->active_sockets[socket_number] = 0;
 			break;
 		}
-	}	
+	}
 }
 
 void winsock_server::rec_mode(int socket_numer)
 {
 	Print("Thread started for socket");
+
+	userNames[socket_numer]=this->receive_message(socket_numer);
+	Print("User name is: "+ userNames[socket_numer]);
+
 	while (true)
 	{
 		strcpy(message_buffer, this->receive_message(socket_numer));
 		message_sender = socket_numer;
 		buffer_full = true;
 		//std::string s = ;
-		Print("From user: " + std::to_string(message_sender) + " " + message_buffer);
+		Print("From " + userNames[socket_numer] + ": " + message_buffer);
 
-		if (strcmp(message_buffer, "quit")==0)
+		if (strcmp(message_buffer, "quit") == 0)
 		{
-			Print("Closing connection with " + socket_numer);
+			Print("Closing connection with " + userNames[socket_numer]);
 			closesocket(this->connection_socket[socket_numer]);
-			this->active_sockets[socket_numer]=0;//set the active socket to off (false)
+			this->active_sockets[socket_numer] = 0;//set the active socket to off (false)
 			break;
 		}
 	}
@@ -120,22 +125,25 @@ void winsock_server::send_mode()
 {
 	std::string full_message = "";
 	//Print("th");
+
 	while (true)
 	{
 		if (buffer_full)
 		{
-			full_message = "User " + std::to_string(message_sender) + " " + message_buffer;
-
-
+			
 			for (int socket_number = 0; socket_number < MAX_SOCKETS; socket_number++)
 			{
 				if (this->active_sockets[socket_number] == 1)
+				{
+					full_message = userNames[message_sender] + ": " + message_buffer;
 					this->send_message((char*)full_message.c_str(), socket_number);
+				}
+					
 			}
-	
-			if (strcmp(message_buffer, "quit")==0)
+
+			if (strcmp(message_buffer, "quit") == 0)
 			{
-				Print("Closing Connection with " + message_sender);
+				Print("Closing Connection with " + userNames[message_sender]);
 				closesocket(this->connection_socket[message_sender]);
 				this->active_sockets[message_sender] = 0;
 				std::memset(message_buffer, '0', 128);//clean up buffer for others
@@ -144,7 +152,7 @@ void winsock_server::send_mode()
 			}
 
 			buffer_full = false;
-			std::memset(message_buffer,'0',128);
+			std::memset(message_buffer, '0', 128);
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -152,16 +160,17 @@ void winsock_server::send_mode()
 }
 
 //accepts incoming connections
-int winsock_server::accept_connection(){
+int winsock_server::accept_connection() {
 	SOCKET aux_connection_socket;
 	int socket_number = MAX_SOCKETS;
 
 	if ((aux_connection_socket = accept(this->server_socket, NULL, NULL)) == SOCKET_ERROR) {
 		Print("Could not accept incoming connection");
 		std::cin.get();
-	} else {
-		socket_number = this->find_available_socket(); 
-		if (socket_number < MAX_SOCKETS){
+	}
+	else {
+		socket_number = this->find_available_socket();
+		if (socket_number < MAX_SOCKETS) {
 			Print("Connection Accepted");
 			this->connection_socket[socket_number] = aux_connection_socket;
 			this->send_message("Welcome", socket_number);
@@ -185,29 +194,29 @@ char * winsock_server::receive_message(int index) {
 
 //sends messages to the connection_socket
 void winsock_server::send_message(char * tx_buffer, int index) {
-	send(this->connection_socket[index], tx_buffer, strlen(tx_buffer)+1, 0);
+	send(this->connection_socket[index], tx_buffer, strlen(tx_buffer) + 1, 0);
 }
 
 //server constructor that sets up the port number and ip number
 //it also initializes the socket, binds it, and puts it in listening mode
-winsock_server::winsock_server(int port, std::string ip, std::ofstream *theStream){
+winsock_server::winsock_server(int port, std::string ip, std::ofstream *theStream) {
 	this->ofs = theStream;
 	this->port = port;
-	this->ip = ip; 
+	this->ip = ip;
 	this->server_socket = this->initialize_tcp_socket();
 	this->bind_socket();
 	this->listen_socket();
-	for (int socket_number = 0; socket_number <= MAX_SOCKETS; socket_number++){
+	for (int socket_number = 0; socket_number <= MAX_SOCKETS; socket_number++) {
 		this->active_sockets[socket_number] = 0;
 	}
 }
 
 //server destructor that closes all sockets opened by this object
-winsock_server::~winsock_server(){
+winsock_server::~winsock_server() {
 	for (int socket_number = 0; socket_number < MAX_SOCKETS; socket_number++) {
-		if (this->active_sockets[socket_number] == 1){
+		if (this->active_sockets[socket_number] == 1) {
 			closesocket(this->connection_socket[socket_number]); //closes connection socket
-	    }
+		}
 	}
 	closesocket(this->server_socket); //closes server socket
 }
@@ -220,11 +229,11 @@ char * winsock_client::receive_message() {
 
 //sends messages to the client_socket
 void winsock_client::send_message(char * tx_buffer) {
-	send(this->client_socket, tx_buffer, strlen(tx_buffer)+1, 0);
+	send(this->client_socket, tx_buffer, strlen(tx_buffer) + 1, 0);
 }
 
 //connects to a tcp_server, exits in case the server is unavailable
-void winsock_client::connect_to_tcp_server(){
+void winsock_client::connect_to_tcp_server() {
 	struct sockaddr_in SvrAddr;
 	SvrAddr.sin_family = AF_INET; //Address family type internet
 	SvrAddr.sin_port = htons(this->port); //port (host to network conversion)
@@ -240,7 +249,7 @@ void winsock_client::connect_to_tcp_server(){
 
 //connects to a tcp_server, keeps trying at 200ms intervals in case
 // the server is unavailable
-void winsock_client::connect_to_tcp_server_loop(){
+void winsock_client::connect_to_tcp_server_loop() {
 	Print("Trying to connect to the server");
 
 	bool connected = false;
@@ -261,7 +270,7 @@ void winsock_client::connect_to_tcp_server_loop(){
 
 //client constructor that sets up the port number and ip number
 //it also initializes the socket
-winsock_client::winsock_client(int port, std::string ip, std::ofstream *theStream){
+winsock_client::winsock_client(int port, std::string ip, std::ofstream *theStream) {
 	this->ofs = theStream;
 	this->port = port;
 	this->ip = ip;
@@ -269,7 +278,7 @@ winsock_client::winsock_client(int port, std::string ip, std::ofstream *theStrea
 }
 
 //client socket destructor that closes the client_socket
-winsock_client::~winsock_client(){
+winsock_client::~winsock_client() {
 	closesocket(this->client_socket); //closes client socket
 }
 

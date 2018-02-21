@@ -11,7 +11,6 @@ void Print(std::string msg, std::ofstream *ofs)
 int main(int argc, char *argv[]) {
 	std::string msgToWrite;
 	std::ofstream ofs(argv[1]);
-
 	if (!ofs.is_open())
 		std::cout << "ERROR:  Failed to open output file -- screen shots will be required" << std::endl;
 
@@ -36,6 +35,12 @@ int main(int argc, char *argv[]) {
 		client2.connect_to_tcp_server_loop();
 		client2.receive_message();//eat the welcome message to remove it from the bufer
 		std::thread(&winsock_client::get_message, &client2).detach();
+
+		Print("Enter userName to send: ", &ofs);
+		std::cin.getline(tx_message, sizeof(tx_message));
+		client.send_message(tx_message);
+		Print(("Sending: " + std::string(tx_message)), &ofs);
+
 		while (true)
 		{
 
@@ -43,12 +48,14 @@ int main(int argc, char *argv[]) {
 			std::cin.getline(tx_message, sizeof(tx_message));
 			client.send_message(tx_message);
 			Print(("Sending: " + std::string(tx_message)), &ofs);
-			/*strcpy(rx_message, client.receive_message());
+			/*
+			strcpy(rx_message, client.receive_message());
 			std::string s(rx_message, strlen(rx_message));
 			msgToWrite = "server ack:" + s;
 			Print(msgToWrite, &ofs);
+			*/
 			if (strcmp(tx_message, "quit") == 0)
-				break;*/
+				break;
 		}
 	}
 
