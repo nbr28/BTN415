@@ -1,2 +1,5 @@
-Enter a file to transmit
-Enter a file to transmit
+Enter a text to transmit
+Enter a text to transmit
+Enter a text to transmit
+Enter a text to transmit
+Enter a text to transmit

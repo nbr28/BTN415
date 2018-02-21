@@ -4,10 +4,16 @@
 #include <iostream>
 #include <fstream>
 using namespace std;
+void Print(string message, ofstream of)
+{
+	cout << message.c_str();
+	of << message.c_str();
+}
 
 void main()
 {
 	std::ofstream ofs("Output.txt");
+
 	//starts Winsock DLLs
 	WSADATA wsaData;
 	if ((WSAStartup(MAKEWORD(2, 2), &wsaData)) != 0) {
@@ -38,29 +44,17 @@ void main()
 
 
 	//receives Rxbuffer
+	
 
 	while (1) {
 		//sends Txbuffer		
-		char TxBuffer[128] = {};
-		cout<< "Enter a file to transmit" << std::endl;
-		ofs << "Enter a file to transmit" << std::endl;
-		cin >> TxBuffer;
-		std::ifstream ifs;
-		ifs.open(TxBuffer);
-		if (ifs)
-		{
-			char transmit = '\0';
-			while (!ifs.eof())
-			{
-				ifs.get(transmit);
-				send(ClientSocket, &transmit, sizeof(transmit), 0);
-			}
-		}
-		else
-		{
-			cout << "File could not be opened" << std::endl;
-			ofs << "File could not be opened" << std::endl;
-		}
+		char TxBuffer[128] = {'\0'};
+		char RxBuffer[128] = {'\0'};
+		recv(ClientSocket, RxBuffer, sizeof(RxBuffer),0);
+		cout<< RxBuffer << std::endl;
+		ofs << "Enter a text to transmit" << std::endl;
+		cin.getline(TxBuffer,sizeof(TxBuffer));
+		send(ClientSocket, TxBuffer, strlen(TxBuffer)+1, 0);
 		
 	}
 

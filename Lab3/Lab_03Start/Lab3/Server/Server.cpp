@@ -8,10 +8,10 @@ using namespace std;
 void main()
 {
 	std::ofstream ofs("Server_Output.txt");
-	std::ofstream ofsFile= ofstream("temp.txt");
+	std::ofstream ofsFile = ofstream("temp.txt");
 	if (!ofs)
 		std::cout << "ERROR: Failed to open output file" << std::endl;
-	if(!ofsFile)
+	if (!ofsFile)
 		std::cout << "ERROR: Failed to open output temp file" << std::endl;
 
 	//starts Winsock DLLs		
@@ -69,22 +69,41 @@ void main()
 		}
 
 		ofs << "Connection Established" << std::endl;
-		string output;
-		while (1) {
-			//receives RxBuffer
-			char RxBuffer = '\0';
-			char TxBuffer[128] = "Received Massage";
-			recv(ConnectionSocket, &RxBuffer, sizeof(RxBuffer), 0);
-			if (!ofsFile)
-				cout << "BAD FILE";
 
-			ofs << "Msg Rx: " << RxBuffer << std::endl;
-			//ofsFile.put(RxBuffer);
-			output+= RxBuffer;
-			if (RxBuffer == '#')
-				ofsFile << output.c_str() << endl;
-			//cout << "Msg Rx: " << RxBuffer << std::endl;
-			send(ConnectionSocket, TxBuffer, sizeof(TxBuffer), 0);
+		bool correctUser = false;
+		char TempRxBuffer[128] = { '\0' };
+		send(ConnectionSocket, "Login Name", sizeof("Login Name"), 0);
+
+		for (int i = 0; i < 3 && correctUser == false; i++)
+		{
+			send(ConnectionSocket, "Login Name", sizeof("Login Name"), 0);
+			recv(ConnectionSocket, TempRxBuffer, sizeof(TempRxBuffer), 0);
+
+			if (string(TempRxBuffer)== "sam")
+			{
+				correctUser == true;
+			}
+			
+		}
+		if (correctUser)
+		{
+
+			while (1) {
+				//receives RxBuffer
+				char RxBuffer = '\0';
+				char TxBuffer[128] = "Received Massage";
+				recv(ConnectionSocket, &RxBuffer, sizeof(RxBuffer), 0);
+				if (!ofsFile)
+					cout << "BAD FILE";
+
+				ofs << "Msg Rx: " << RxBuffer << std::endl;
+				//ofsFile.put(RxBuffer);
+				send(ConnectionSocket, TxBuffer, sizeof(TxBuffer), 0);
+			}
+		}
+		else
+		{
+			send(ConnectionSocket, "failed", sizeof("failed"), 0);
 		}
 		closesocket(ConnectionSocket);	//closes incoming socket
 	}
