@@ -1,13 +1,14 @@
 #include <windows.networking.sockets.h>
 #include <iostream>
 #include <fstream>
+#include <thread>
 #pragma comment(lib, "Ws2_32.lib")
 
 using namespace std;
 
 void threadLogic(SOCKET ConnectionSocket,ofstream& ofs)
 {
-
+	cout << "thread started" << endl;
 	send(ConnectionSocket, "Ready to Receive", sizeof("Ready to Receive"), 0);
 	while (1) {
 		//receives RxBuffer
@@ -21,8 +22,10 @@ void threadLogic(SOCKET ConnectionSocket,ofstream& ofs)
 
 		send(ConnectionSocket, TxBuffer, sizeof(TxBuffer), 0);
 	}
+
 	cout << "closing connection" << endl;
 	closesocket(ConnectionSocket);	//closes incoming socket
+	cout << "Thread closed" << endl;
 }
 
 void main()
@@ -56,7 +59,7 @@ void main()
 	SvrAddr.sin_family = AF_INET;
 	SvrAddr.sin_addr.s_addr = INADDR_ANY;
 	SvrAddr.sin_port = htons(27000);
-	if (bind(ServerSocket, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr)) == SOCKET_ERROR)
+	if (::bind(ServerSocket, (struct sockaddr *)&SvrAddr, sizeof(SvrAddr)) == SOCKET_ERROR)
 	{
 		closesocket(ServerSocket);
 		WSACleanup();
@@ -64,18 +67,19 @@ void main()
 		return;
 	}
 
-	
+
+	//listen on a socket
+	if (listen(ServerSocket, 2) == SOCKET_ERROR) {
+		closesocket(ServerSocket);
+		WSACleanup();
+		ofs << "ERROR:  listen failed to configure ServerSocket" << std::endl;
+		return;
+	}
 
 	while (1)
 	{
 
-		//listen on a socket
-		if (listen(ServerSocket, 3) == SOCKET_ERROR) {
-			closesocket(ServerSocket);
-			WSACleanup();
-			ofs << "ERROR:  listen failed to configure ServerSocket" << std::endl;
-			return;
-		}
+
 
 
 		cout << "Waiting for client connection\n" << endl;
@@ -106,21 +110,20 @@ void main()
 			}
 		}
 
-		
 
 		if(correctUser)
 		{
-			threadLogic(ConnectionSocket, ofs);
 			//spawn new threads here
+			std::thread(threadLogic,move(ConnectionSocket), ref(ofs)).detach();
 		}
 		else
 		{
 			send(ConnectionSocket, "failed", sizeof("failed"), 0);
 			cout << "failed Connection" << endl;
+			cout << "closing connection" << endl;
+			closesocket(ConnectionSocket);	//closes incoming socket
 		}
 
-		cout << "closing connection" << endl;
-		closesocket(ConnectionSocket);	//closes incoming socket
 
 
 		
