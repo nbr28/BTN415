@@ -8,11 +8,8 @@ using namespace std;
 void main()
 {
 	std::ofstream ofs("Server_Output.txt");
-	std::ofstream ofsFile= ofstream("temp.txt");
 	if (!ofs)
 		std::cout << "ERROR: Failed to open output file" << std::endl;
-	if(!ofsFile)
-		std::cout << "ERROR: Failed to open output temp file" << std::endl;
 
 	//starts Winsock DLLs		
 	WSADATA wsaData;
@@ -69,22 +66,19 @@ void main()
 		}
 
 		ofs << "Connection Established" << std::endl;
-		string output;
+
 		while (1) {
 			//receives RxBuffer
-			char RxBuffer = '\0';
+			char RxBuffer[128] = {};
 			char TxBuffer[128] = "Received Massage";
-			recv(ConnectionSocket, &RxBuffer, sizeof(RxBuffer), 0);
-			if (!ofsFile)
-				cout << "BAD FILE";
+			recv(ConnectionSocket, RxBuffer, sizeof(RxBuffer), 0);
 
 			ofs << "Msg Rx: " << RxBuffer << std::endl;
-			//ofsFile.put(RxBuffer);
-			output+= RxBuffer;
-			if (RxBuffer == '#')
-				ofsFile << output.c_str() << endl;
-			//cout << "Msg Rx: " << RxBuffer << std::endl;
+			cout << "Msg Rx: " << RxBuffer << std::endl;
 			send(ConnectionSocket, TxBuffer, sizeof(TxBuffer), 0);
+
+			if (strcmp(RxBuffer, "quit") == 0)
+				break;
 		}
 		closesocket(ConnectionSocket);	//closes incoming socket
 	}

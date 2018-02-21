@@ -19,4 +19,8 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="temp.txt" />
+    <Text Include="Server_Output.txt" />
+  </ItemGroup>
 </Project>
