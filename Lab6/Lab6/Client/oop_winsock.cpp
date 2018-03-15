@@ -113,6 +113,36 @@ winsock_server::~winsock_server(){
 	closesocket(this->server_socket); //closes server socket
 }
 
+void winsock_server::receive_float_array(float arr[])
+{
+	recv(server_socket,(char *)arr,sizeof(float)*4,0);
+}
+
+void winsock_server::receive_packet(packet & pack)
+{
+	recv(server_socket, (char*)&pack, sizeof(packet), 0);
+}
+
+void winsock_server::receive_bitPacket(bitPacket & pack)
+{
+	int result=recv(server_socket, rx_buffer, sizeof(rx_buffer), 0);
+
+	if (result == bitPacketSize)//check that the packet is actually good by checking the size is matching
+	{
+		memcpy(&pack.student_num, rx_buffer, sizeof(pack.student_num));//copy over student number
+		memcpy( pack.student_name, rx_buffer + 4, sizeof(pack.student_name));//copy over student name
+		
+
+		pack.current = rx_buffer[36] & 1;
+		pack.doing_coop = (rx_buffer[36] >> 1 )& 1;
+		pack.academic_violations = (rx_buffer[36] >> 2) & 1;
+
+		memcpy( &pack.student_gpa, rx_buffer + 37, sizeof(pack.student_gpa));//copy over student gpa
+	}
+	
+
+}
+
 //receives messages from the client_socket
 char * winsock_client::receive_message() {
 	memset(rx_buffer, 0, 128);
@@ -178,4 +208,25 @@ winsock_client::winsock_client(int port, std::string ip, std::ofstream *theStrea
 //client socket destructor that closes the client_socket
 winsock_client::~winsock_client(){
 	closesocket(this->client_socket); //closes client socket
+}
+
+void winsock_client::send_float_array(float arr[], int size)
+{
+	send(client_socket,(char *) arr, 4 * sizeof(float),0);
+}
+
+void winsock_client::send_packet(packet & pack)
+{
+	send(client_socket, (char *)&pack, sizeof(packet), 0);
+}
+
+void winsock_client::send_bitPacket(bitPacket & pack)
+{
+	char txBuffer[bitPacketSize];
+	memcpy(txBuffer, &pack.student_num, sizeof(pack.student_num));
+	memcpy(txBuffer + 4, pack.student_name, sizeof(pack.student_name));
+	char * flags = pack.student_name + sizeof(pack.student_name);//36
+	txBuffer[36] = *flags;
+	memcpy(txBuffer + 37, &pack.student_gpa, sizeof(pack.student_gpa));
+	send(client_socket, (char *)&pack, bitPacketSize, 0);
 }

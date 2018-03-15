@@ -9,6 +9,23 @@
 #include <thread>
 #include <chrono>
 
+struct packet
+{
+	int student_number;
+	char student_name[32];
+	float student_gpa;
+};
+const int bitPacketSize = 41;
+struct bitPacket
+{
+	int student_num;
+	char student_name[32];
+	unsigned char current : 1;
+	unsigned char doing_coop : 1;
+	unsigned char academic_violations : 1;
+	unsigned char padding : 5;
+	float student_gpa;
+};
 
 
 class winsock {
@@ -50,6 +67,9 @@ public:
 	void send_message(char *);  
 	winsock_server(int, std::string, std::ofstream*);
 	~winsock_server();
+	void receive_float_array(float arr[]);
+	void receive_packet(packet& pack);
+	void receive_bitPacket(bitPacket &pack);
 };
 
 class winsock_client : public winsock {
@@ -69,6 +89,9 @@ public:
 	void connect_to_tcp_server_loop(); //keeps trying to connect until successful
 	winsock_client(int, std::string, std::ofstream*);
 	~winsock_client();
+	void send_float_array(float arr[], int size);
+	void send_packet(packet& pack);
+	void send_bitPacket(bitPacket &pack);
 };
 
 #endif WINSOCK_H

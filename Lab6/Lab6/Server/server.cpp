@@ -10,6 +10,7 @@ void test_float(float * my_input) {
 int main() {
 
 	float my_array[4];
+	bitPacket p;
 	test_float(my_array);
 
 	std::ofstream ofs("Server_Output.txt");
