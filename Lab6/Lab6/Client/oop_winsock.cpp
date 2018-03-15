@@ -228,5 +228,5 @@ void winsock_client::send_bitPacket(bitPacket & pack)
 	char * flags = pack.student_name + sizeof(pack.student_name);//36
 	txBuffer[36] = *flags;
 	memcpy(txBuffer + 37, &pack.student_gpa, sizeof(pack.student_gpa));
-	send(client_socket, (char *)&pack, bitPacketSize, 0);
+	send(this->client_socket, (char *)&pack, bitPacketSize, 0);
 }

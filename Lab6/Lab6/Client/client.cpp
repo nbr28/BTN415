@@ -11,9 +11,9 @@ int main() {
 
 	client.connect_to_tcp_server_loop();
 
-	/*
+	
     float my_array[4] = {1.25, 2.45, 1.87, 2.2};
-    client.send_float_array(my_array);
+    client.send_float_array(my_array,4);
 	
     packet my_packet;
     my_packet.student_number = 640;
@@ -22,15 +22,15 @@ int main() {
     client.send_packet(my_packet);
 	
 	
-    bitpacket my_bitpacket;
-    my_bitpacket.student_number = 640;
-    strcpy_s(my_bitpacket.student_name,"john smith");
-    my_bitpacket.current = 1;
-    my_bitpacket.doing_coop = 0;
-    my_bitpacket.academic_violations = 0;
-    my_bitpacket.student_gpa = 2.9;
-    client.send_bitpacket(my_bitpacket);
-	*/
+    bitPacket my_bitPacket;
+    my_bitPacket.student_num = 640;
+    strcpy_s(my_bitPacket.student_name,"john smith");
+    my_bitPacket.current = 1;
+    my_bitPacket.doing_coop = 0;
+    my_bitPacket.academic_violations = 0;
+    my_bitPacket.student_gpa = 2.9;
+    client.send_bitPacket(my_bitPacket);
+
 	
 	WSACleanup();
 	exit(0);
