@@ -115,17 +115,22 @@ winsock_server::~winsock_server(){
 
 void winsock_server::receive_float_array(float arr[])
 {
-	recv(server_socket,(char *)arr,sizeof(float)*4,0);
+	recv(connection_socket,(char *)arr,sizeof(float)*4,0);
+	Print("\nReceived Floats: ");
+	for (int i = 0; i < 4; i++)
+		Print(std::to_string(i) + ": " + std::to_string(arr[i]));
 }
 
 void winsock_server::receive_packet(packet & pack)
 {
-	recv(server_socket, (char*)&pack, sizeof(packet), 0);
+	recv(connection_socket, (char*)&pack, sizeof(packet), 0);
+	Print("\nReceived Packet: ");
+	PrintPacket(pack);//print the packet
 }
 
 void winsock_server::receive_bitPacket(bitPacket & pack)
 {
-	int result=recv(server_socket, rx_buffer, sizeof(rx_buffer), 0);
+	int result=recv(connection_socket, rx_buffer, sizeof(rx_buffer), 0);
 
 	if (result == bitPacketSize)//check that the packet is actually good by checking the size is matching
 	{
@@ -139,7 +144,8 @@ void winsock_server::receive_bitPacket(bitPacket & pack)
 
 		memcpy( &pack.student_gpa, rx_buffer + 37, sizeof(pack.student_gpa));//copy over student gpa
 	}
-	
+	Print("\nReceived Bit Packet: ");
+	PrintBitPacket(pack);//print the bit packet
 
 }
 
@@ -212,11 +218,16 @@ winsock_client::~winsock_client(){
 
 void winsock_client::send_float_array(float arr[], int size)
 {
-	send(client_socket,(char *) arr, 4 * sizeof(float),0);
+	Print("\nSending Floats: ");
+	for (int i = 0; i < size; i++)
+		Print(std::to_string(i)+": "+std::to_string(arr[i]));
+	send(client_socket,(char *) arr,  sizeof(float)*size,0);
 }
 
 void winsock_client::send_packet(packet & pack)
 {
+	Print("\nSending Packet: ");
+	PrintPacket(pack);//print the packet
 	send(client_socket, (char *)&pack, sizeof(packet), 0);
 }
 
@@ -228,5 +239,9 @@ void winsock_client::send_bitPacket(bitPacket & pack)
 	char * flags = pack.student_name + sizeof(pack.student_name);//36
 	txBuffer[36] = *flags;
 	memcpy(txBuffer + 37, &pack.student_gpa, sizeof(pack.student_gpa));
-	send(this->client_socket, (char *)&pack, bitPacketSize, 0);
+
+	Print("\nSending Bit Packet: ");
+	PrintBitPacket(pack);//print the bit packet
+
+	send(this->client_socket, txBuffer, bitPacketSize, 0);
 }

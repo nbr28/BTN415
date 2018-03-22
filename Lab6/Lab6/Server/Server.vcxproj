@@ -121,6 +121,9 @@
   <ItemGroup>
     <ClInclude Include="..\Client\oop_winsock.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Server_Output.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

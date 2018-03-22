@@ -1,0 +1,23 @@
+Trying to connect to the server
+Connection Established
+
+Sending Floats: 
+0: 1.250000
+1: 2.450000
+2: 1.870000
+3: 2.200000
+
+Sending Packet: 
+Student Name: john smith
+Student Number: 640
+Student GPA: 2.900000
+
+
+Sending Bit Packet: 
+Student Name: john smith
+Student Number: 640
+Student GPA: 2.900000
+Current?: 1
+Doing Co-op?: 0
+Academic Violations?: 0
+

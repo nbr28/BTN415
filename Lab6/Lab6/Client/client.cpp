@@ -3,7 +3,7 @@
 #include <string>
 
 int main() {
-	std::ofstream ofs("Server_Output.txt");
+	std::ofstream ofs("Client_Output.txt");
 	if (!ofs.is_open())
 		std::cout << "ERROR:  Failed to open output file -- screen shots required" << std::endl;
 
@@ -13,7 +13,7 @@ int main() {
 
 	
     float my_array[4] = {1.25, 2.45, 1.87, 2.2};
-    client.send_float_array(my_array,4);
+    client.send_float_array(my_array,4);//send the float array
 	
     packet my_packet;
     my_packet.student_number = 640;

@@ -22,14 +22,16 @@ int main() {
 	server.accept_connection();
 
 	
-	float rec_array[4];
+	float rec_array[4] = {0};
 	server.receive_float_array(rec_array);
 	
 	packet rec_packet;
 	server.receive_packet(rec_packet);
 
+
 	bitPacket rec_bitpacket;
 	server.receive_bitPacket(rec_bitpacket);
+
 	
 	WSACleanup();
 	exit(0);

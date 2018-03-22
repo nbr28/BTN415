@@ -42,9 +42,33 @@ protected:
 		std::cout << msg << std::endl;
 		*ofs << msg << std::endl;
 	}
+	void PrintBitPacket(bitPacket pack)
+	{
+
+		Print("Student Name: " + std::string(pack.student_name) + "\n" +
+			"Student Number: " + std::to_string(pack.student_num) + "\n" +
+			"Student GPA: " + std::to_string(pack.student_gpa) + "\n" +
+			"Current?: " + std::to_string((int)pack.current) + "\n" +
+			"Doing Co-op?: " + std::to_string((int)pack.doing_coop) + "\n" +
+			"Academic Violations?: " + std::to_string((int)pack.academic_violations) + "\n");
+
+	}
+
+	void PrintPacket(packet pack)
+	{
+
+		Print("Student Name: " + std::string(pack.student_name) + "\n"
+			+ "Student Number: " + std::to_string(pack.student_number) + "\n"
+			+ "Student GPA: " + std::to_string(pack.student_gpa) + "\n");
+	}
+
+
 public:
 	void start_DLLS();
 	SOCKET initialize_tcp_socket();
+
+
+
 	winsock();
 };
 
@@ -58,6 +82,25 @@ protected:
 		std::cout << msg << std::endl;
 		*ofs << msg << std::endl;
 	}
+	void PrintBitPacket(bitPacket pack)
+	{
+
+		Print("Student Name: " + std::string(pack.student_name) + "\n" +
+			"Student Number: " + std::to_string(pack.student_num) + "\n" +
+			"Student GPA: " + std::to_string(pack.student_gpa) + "\n" +
+			"Current?: " + std::to_string((int)pack.current) + "\n" +
+			"Doing Co-op?: " + std::to_string((int)pack.doing_coop) + "\n" +
+			"Academic Violations?: " + std::to_string((int)pack.academic_violations) + "\n");
+
+	}
+
+	void PrintPacket(packet pack)
+	{
+
+		Print("Student Name: " + std::string(pack.student_name) + "\n"
+			+ "Student Number: " + std::to_string(pack.student_number) + "\n"
+			+ "Student GPA: " + std::to_string(pack.student_gpa) + "\n");
+	}
 public:
 	void bind_socket();
 	void listen_socket();
@@ -70,6 +113,8 @@ public:
 	void receive_float_array(float arr[]);
 	void receive_packet(packet& pack);
 	void receive_bitPacket(bitPacket &pack);
+
+
 };
 
 class winsock_client : public winsock {
@@ -82,6 +127,26 @@ protected:
 		std::cout << msg << std::endl;
 		*ofs << msg << std::endl;
 	}
+	void PrintBitPacket(bitPacket pack)
+	{
+
+		Print("Student Name: " + std::string(pack.student_name) + "\n" +
+			"Student Number: " + std::to_string(pack.student_num) + "\n" +
+			"Student GPA: " + std::to_string(pack.student_gpa) + "\n" +
+			"Current?: " + std::to_string((int)pack.current) + "\n" +
+			"Doing Co-op?: " + std::to_string((int)pack.doing_coop) + "\n" +
+			"Academic Violations?: " + std::to_string((int)pack.academic_violations) + "\n");
+
+	}
+
+	void PrintPacket(packet pack)
+	{
+
+		Print("Student Name: " + std::string(pack.student_name) + "\n"
+			+ "Student Number: " + std::to_string(pack.student_number) + "\n"
+			+ "Student GPA: " + std::to_string(pack.student_gpa) + "\n");
+	}
+
 public:
 	char * receive_message(); //receives message from the client_socket
 	void send_message(char *); //sends message to the client_socket
@@ -92,6 +157,8 @@ public:
 	void send_float_array(float arr[], int size);
 	void send_packet(packet& pack);
 	void send_bitPacket(bitPacket &pack);
+
+
 };
 
 #endif WINSOCK_H
