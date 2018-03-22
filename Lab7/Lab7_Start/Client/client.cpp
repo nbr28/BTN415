@@ -22,7 +22,8 @@ int main() {
 	tx_frame.tail = 5;
     client.send_frame(tx_frame);
 
-
+	frame rec_frame;
+	client.receive_frame(rec_frame);
 	
 	
 	WSACleanup();

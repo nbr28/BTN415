@@ -16,6 +16,12 @@ int main() {
 	frame rec_frame;
 	server.receive_frame(rec_frame);
 
+	frame tx_frame;
+	tx_frame.length = 3;
+	tx_frame.body = new int[tx_frame.length];
+	tx_frame.body = (int*)"Natan Ross";
+	tx_frame.tail = 5;
+	server.send_frame(tx_frame);
 
 	WSACleanup();
 	exit(0);

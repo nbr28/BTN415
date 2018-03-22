@@ -1,5 +1,10 @@
 Trying to connect to the server
 Connection Established
+Sent Frame:
 Length: 3
-Letters: 650650650
+Numbers: 3, 650, 2, 
+Tail: 5
+Receive Frame:
+Length: 3
+Letters: Natan Ross  
 Tail: 5

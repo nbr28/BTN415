@@ -101,20 +101,32 @@ void winsock_server::receive_frame(frame & refFrame)
 	}
 
 	memcpy(&(refFrame.tail) , rx_buffer+(sizeof(int)*refFrame.length) + 4, sizeof(int));//copy over the tail after the array
-
-	Print(FrameString(refFrame));
+	Print("Receive Frame:");
+	Print(FrameInt(refFrame));
 }
 
 //sends messages to the connection_socket
-void winsock_server::send_frame(char * tx_buffer) {
+void winsock_server::send_message(char * tx_buffer) {
 	std::string msg = "Sending: " + (std::string)tx_buffer;
 	Print(msg);
 	send(this->connection_socket, tx_buffer, strlen(tx_buffer), 0);
 }
 
-void winsock_server::send_message(frame & sendFrame)
+void winsock_server::send_frame(frame & sendFrame)
 {
+	char txBuffer[128];
 
+	memcpy(txBuffer, &(sendFrame.length), sizeof(sendFrame.length));//copy over length of array
+
+	if (sendFrame.length != 0)//check if the frame is empty
+	{
+		memcpy(txBuffer + sizeof(sendFrame.length), sendFrame.body, sizeof(sendFrame.length)*sendFrame.length);
+	}
+
+	memcpy(txBuffer + (sizeof(sendFrame.length)*sendFrame.length) + 4, &(sendFrame.tail), sizeof(sendFrame.tail));//copy over the tail after the array
+	Print("Sent Frame:");
+	Print(FrameString(sendFrame));
+	send(this->connection_socket, (char*)txBuffer, (sizeof(int)*sendFrame.length) + emptyFrame, 0);
 }
 
 //server constructor that sets up the port number and ip number
@@ -144,9 +156,25 @@ char * winsock_client::receive_message() {
 	return this->rx_buffer;
 }
 
+void winsock_client::receive_frame(frame & refFrame)
+{
+	recv(this->client_socket, this->rx_buffer, sizeof(this->rx_buffer), 0);
+
+	memcpy(&refFrame.length, rx_buffer, sizeof(int));//copy over length of array
+	refFrame.body = new int[refFrame.length];
+	if (refFrame.length != 0)//check if the frame is empty
+	{
+		memcpy(refFrame.body, rx_buffer + 4, sizeof(int)*refFrame.length);
+	}
+
+	memcpy(&(refFrame.tail), rx_buffer + (sizeof(int)*refFrame.length) + 4, sizeof(int));//copy over the tail after the array
+	Print("Receive Frame:");
+	Print(FrameString(refFrame));
+}
+
 void winsock_client::send_frame(frame & sendFrame)
 {
-	char* txBuffer[128];
+	char txBuffer[128];
 	
 	memcpy(txBuffer, &(sendFrame.length), sizeof(sendFrame.length));//copy over length of array
 	
@@ -156,7 +184,8 @@ void winsock_client::send_frame(frame & sendFrame)
 	}
 
 	memcpy(txBuffer+ (sizeof(sendFrame.length)*sendFrame.length)+4, &(sendFrame.tail), sizeof(sendFrame.tail));//copy over the tail after the array
-	Print(FrameString(sendFrame));
+	Print("Sent Frame:");
+	Print(FrameInt(sendFrame));
 	send(this->client_socket,(char*) txBuffer, (sizeof(int)*sendFrame.length) + emptyFrame, 0);
 }
 
@@ -223,12 +252,28 @@ std::string FrameString(frame & f)
 	returnString += "Length: " + std::to_string(f.length) + "\n";
 
 	returnString += "Letters: ";
-	for (int i = 0; i < f.length; i++)
+	for (int i = 0; i < f.length*sizeof(f.length); i++)
 	{
-		returnString += std::to_string(*(f.body+1));
+		returnString += (char)(*((char*)f.body + i));
 	}
 
 	returnString += "\n";
 	returnString += "Tail: "+std::to_string(f.tail);
+	return returnString;
+}
+
+std::string FrameInt(frame & f)
+{
+	std::string returnString = "";
+	returnString += "Length: " + std::to_string(f.length) + "\n";
+
+	returnString += "Numbers: ";
+	for (int i = 0; i < f.length; i++)
+	{
+		returnString += std::to_string(*(f.body + i))+", ";
+	}
+
+	returnString += "\n";
+	returnString += "Tail: " + std::to_string(f.tail);
 	return returnString;
 }

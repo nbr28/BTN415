@@ -54,8 +54,8 @@ public:
 	void close_connection();
 	char * receive_message();
 	void receive_frame(frame & refFrame);
-	void send_frame(char *);  
-	void send_message(frame& sendFrame);
+	void send_message(char *);
+	void send_frame(frame& sendFrame);
 	winsock_server(int, std::string, std::ofstream*);
 	~winsock_server();
 };
@@ -72,6 +72,7 @@ protected:
 	}
 public:
 	char * receive_message(); //receives message from the client_socket
+	void receive_frame(frame& sendFrame);
 	void send_message(char*);
 	void send_frame(frame& sendFrame);   //sends message to the client_socket
 	void connect_to_tcp_server(); //tries to connect, exits if no server available
@@ -81,5 +82,5 @@ public:
 };
 
 std::string FrameString(frame& f);
-
+std::string FrameInt(frame & f);
 #endif WINSOCK_H

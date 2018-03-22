@@ -1,2 +1,10 @@
 Waiting for client connection
 Connection Accepted
+Receive Frame:
+Length: 3
+Numbers: 3, 650, 2, 
+Tail: 5
+Sent Frame:
+Length: 3
+Letters: Natan Ross  
+Tail: 5
