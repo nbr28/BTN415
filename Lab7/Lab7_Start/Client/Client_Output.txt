@@ -1,0 +1,5 @@
+Trying to connect to the server
+Connection Established
+Length: 3
+Letters: 650650650
+Tail: 5

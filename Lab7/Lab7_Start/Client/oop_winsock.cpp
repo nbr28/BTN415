@@ -89,11 +89,32 @@ char * winsock_server::receive_message() {
 	return this->rx_buffer;
 }
 
+void winsock_server::receive_frame(frame & refFrame)
+{
+	recv(this->connection_socket, this->rx_buffer, sizeof(this->rx_buffer), 0);
+	
+	memcpy(&refFrame.length, rx_buffer, sizeof(int));//copy over length of array
+	refFrame.body = new int[refFrame.length];
+	if (refFrame.length != 0)//check if the frame is empty
+	{
+		memcpy(refFrame.body,rx_buffer+4, sizeof(int)*refFrame.length);
+	}
+
+	memcpy(&(refFrame.tail) , rx_buffer+(sizeof(int)*refFrame.length) + 4, sizeof(int));//copy over the tail after the array
+
+	Print(FrameString(refFrame));
+}
+
 //sends messages to the connection_socket
-void winsock_server::send_message(char * tx_buffer) {
+void winsock_server::send_frame(char * tx_buffer) {
 	std::string msg = "Sending: " + (std::string)tx_buffer;
 	Print(msg);
 	send(this->connection_socket, tx_buffer, strlen(tx_buffer), 0);
+}
+
+void winsock_server::send_message(frame & sendFrame)
+{
+
 }
 
 //server constructor that sets up the port number and ip number
@@ -121,6 +142,22 @@ char * winsock_client::receive_message() {
 	std::string msg = "Received: " + (std::string)rx_buffer;
 	Print(msg);
 	return this->rx_buffer;
+}
+
+void winsock_client::send_frame(frame & sendFrame)
+{
+	char* txBuffer[128];
+	
+	memcpy(txBuffer, &(sendFrame.length), sizeof(sendFrame.length));//copy over length of array
+	
+	if (sendFrame.length != 0)//check if the frame is empty
+	{
+		memcpy(txBuffer + sizeof(sendFrame.length), sendFrame.body, sizeof(sendFrame.length)*sendFrame.length);
+	}
+
+	memcpy(txBuffer+ (sizeof(sendFrame.length)*sendFrame.length)+4, &(sendFrame.tail), sizeof(sendFrame.tail));//copy over the tail after the array
+	Print(FrameString(sendFrame));
+	send(this->client_socket,(char*) txBuffer, (sizeof(int)*sendFrame.length) + emptyFrame, 0);
 }
 
 //sends messages to the client_socket
@@ -178,4 +215,20 @@ winsock_client::winsock_client(int port, std::string ip, std::ofstream *theStrea
 //client socket destructor that closes the client_socket
 winsock_client::~winsock_client(){
 	closesocket(this->client_socket); //closes client socket
+}
+
+std::string FrameString(frame & f)
+{
+	std::string returnString="";
+	returnString += "Length: " + std::to_string(f.length) + "\n";
+
+	returnString += "Letters: ";
+	for (int i = 0; i < f.length; i++)
+	{
+		returnString += std::to_string(*(f.body+1));
+	}
+
+	returnString += "\n";
+	returnString += "Tail: "+std::to_string(f.tail);
+	return returnString;
 }

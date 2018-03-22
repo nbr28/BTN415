@@ -12,13 +12,13 @@ int main() {
 
 	server.accept_connection();
 
-	/*
+	
 	frame rec_frame;
 	server.receive_frame(rec_frame);
 
-	bitframe rec_bitframe;
-	server.receive_bitframe(rec_bitframe);
-	*/
+
 	WSACleanup();
 	exit(0);
 }
+
+

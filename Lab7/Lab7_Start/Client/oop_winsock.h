@@ -9,7 +9,13 @@
 #include <thread>
 #include <chrono>
 
+struct frame {
+	int length; //represents the number of elements in the body
+	int *body;
+	int tail;
+};
 
+const int emptyFrame = 8;
 
 class winsock {
 protected:
@@ -46,8 +52,10 @@ public:
 	void listen_socket();
 	void accept_connection();
 	void close_connection();
-	char * receive_message();  
-	void send_message(char *);  
+	char * receive_message();
+	void receive_frame(frame & refFrame);
+	void send_frame(char *);  
+	void send_message(frame& sendFrame);
 	winsock_server(int, std::string, std::ofstream*);
 	~winsock_server();
 };
@@ -64,11 +72,14 @@ protected:
 	}
 public:
 	char * receive_message(); //receives message from the client_socket
-	void send_message(char *); //sends message to the client_socket
+	void send_message(char*);
+	void send_frame(frame& sendFrame);   //sends message to the client_socket
 	void connect_to_tcp_server(); //tries to connect, exits if no server available
 	void connect_to_tcp_server_loop(); //keeps trying to connect until successful
 	winsock_client(int, std::string, std::ofstream*);
 	~winsock_client();
 };
+
+std::string FrameString(frame& f);
 
 #endif WINSOCK_H
